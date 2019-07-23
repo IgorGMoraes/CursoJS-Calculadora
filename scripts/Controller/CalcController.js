@@ -47,7 +47,8 @@ class CalcController {
     calc(){
         let last = this._operation.pop();
         let result = eval(this._operation.join(""));
-        this._operation = [result + last];
+        this._operation = [result, last];
+        this.setLastNumberToDisplay();
     }
 
     pushOperation(value){
@@ -56,20 +57,35 @@ class CalcController {
             this.calc();            
         }
     }
+
     setLastNumberToDisplay(){
-        if(this.getLastOperation)
+        let lastNumber;
+        // debugger;
+        for (let i = this._operation.length-1; i >= 0; i--) {            
+            if(this.isOperator(this._operation[i])){
+                lastNumber = this._operation[i-1];
+            }
+            else {
+                lastNumber = this._operation[i];
+            }
+        }
+        console.log(lastNumber)
+        this.displayCalc = lastNumber;
     }
-    addOperation(value){                
+
+    addOperation(value){
+        // debugger;           
         if (isNaN(this.getLastOperation())) {
             if (this.isOperator(value)) {
                 //opradores
-                this.setLastOperation(value);                
+                this.setLastOperation(value);
             } else if (isNaN(value)) {
                 //outra coisa
                 console.log("outra coisa", value);
             } else{
                 //numero
                 this.pushOperation(value);
+                this.setLastNumberToDisplay();
             } 
         } else if (this.isOperator(value)) {
             this.pushOperation(value);
@@ -164,14 +180,14 @@ class CalcController {
     }
 
     get displayDate(){
-        return this._dateEl.innerHTML
+        return this._dateEl.innerHTML;
     }
 
     set displayDate(value){
         this._dateEl.innerHTML = value;
     }
     get displayCalc(){
-        return this._displayCalcEl.innerHTML
+        return this._displayCalcEl.innerHTML;
     }
 
     set displayCalc(value){
