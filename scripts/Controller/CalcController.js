@@ -1,6 +1,8 @@
 class CalcController {
 
     constructor(){
+        this._audio = new Audio("click.mp3");
+        this._audioOn = false;
         this._lastOperator = "";
         this._lastNumber= "";
         this._operation = [];
@@ -20,9 +22,26 @@ class CalcController {
             this.setDisplayDateTime()
         }, 1000);
         this.setLastNumberToDisplay();
+
+        document.querySelectorAll(".btn-ac").forEach(btn => {
+            btn.addEventListener("dblclick", e =>{
+                this.toggleAudio();
+            })
+        });
     }
     
-    //Buttons methods 
+    //Buttons methods
+    toggleAudio(){
+        this._audioOn = !this._audioOn;
+    }
+
+    playAudio(){
+        if (this._audioOn) {
+            this._audio.currentTime = 0;
+            this._audio.play();
+        }
+    }
+
     clearAll(){
         this._operation = [];
         this._lastNumber = "";
@@ -64,7 +83,15 @@ class CalcController {
     }
 
     getResult(){
-        return eval(this._operation.join(""));
+        try {
+            return eval(this._operation.join(""));
+        } catch (error) {
+            setTimeout(() => {
+                this.setError();
+            }, 1);
+            
+        }    
+        
     }
 
     calc(){
@@ -149,7 +176,7 @@ class CalcController {
 
     initKeyboard(){
         document.addEventListener("keyup", e => {
-            console.log(e.key);
+           this.playAudio();
             
             switch (e.key) {
                 case "Escape":
@@ -202,6 +229,8 @@ class CalcController {
     }
 
     execBtn(value){
+        this.playAudio();
+
         switch (value) {
             case "ac":
                 this.clearAll();
@@ -270,7 +299,6 @@ class CalcController {
     }
 
     //GETTERS AND SETTERS
-
     setDisplayDateTime(){
         this.displayDate = this.currentDate.toLocaleDateString(this._locale);
         this.displayTime = this.currentDate.toLocaleTimeString(this._locale);
